@@ -1,0 +1,11 @@
+{
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "ai-game-developer"
+  ],
+  "permissions": {
+    "allow": [
+      "mcp__ai-game-developer__script-execute"
+    ]
+  }
+}

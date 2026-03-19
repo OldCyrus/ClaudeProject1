@@ -285,21 +285,37 @@ public static class CollisionDiagnostics
 
         sb.AppendLine($"  Floor '{floor.name}'  scale={floor.transform.localScale}");
 
-        // If a solid BoxCollider is already there we just validate thickness.
+        // Plane mesh is 10×10 local units; scale (6,1,6) → 60×60 world.
+        // BoxCollider size must be (10, 0.4, 10) local = 60×0.4×60 world.
+        const float PlaneLocalExtent = 10f;
+
+        // If a solid BoxCollider is already there we validate both thickness AND coverage.
         if (boxCol != null && meshCol == null)
         {
-            float thick = boxCol.size.y * floor.transform.lossyScale.y;
-            if (thick < 0.1f)
+            float thick   = boxCol.size.y * floor.transform.lossyScale.y;
+            bool  tooThin = thick < 0.1f;
+            bool  toSmall = boxCol.size.x < PlaneLocalExtent - 0.01f || boxCol.size.z < PlaneLocalExtent - 0.01f;
+
+            if (tooThin || toSmall)
             {
+                float oldX = boxCol.size.x, oldZ = boxCol.size.z;
                 boxCol.center = new Vector3(0f, -0.2f, 0f);
-                boxCol.size   = new Vector3(1f,  0.4f, 1f);
+                boxCol.size   = new Vector3(PlaneLocalExtent, 0.4f, PlaneLocalExtent);
                 EditorUtility.SetDirty(floor);
-                sb.AppendLine($"  ✔ Floor BoxCollider was too thin ({thick:F3} m) → expanded to 0.4 m.");
-                report.Add("Expanded floor BoxCollider thickness to 0.4 m");
+                if (tooThin)
+                {
+                    sb.AppendLine($"  ✔ Floor BoxCollider was too thin ({thick:F3} m) → expanded to 0.4 m.");
+                    report.Add("Expanded floor BoxCollider thickness to 0.4 m");
+                }
+                if (toSmall)
+                {
+                    sb.AppendLine($"  ✔ Floor BoxCollider XZ was {oldX}×{oldZ} local → set to 10×10 (covers full 60×60 world).");
+                    report.Add("Expanded floor BoxCollider XZ to 10×10 local (60×60 world)");
+                }
             }
             else
             {
-                sb.AppendLine($"  ✓ Floor already has a solid BoxCollider (thickness={thick:F3} m).");
+                sb.AppendLine($"  ✓ Floor BoxCollider OK (thickness={thick:F3} m, size={boxCol.size}).");
             }
             if (boxCol.isTrigger)
             {
@@ -332,7 +348,7 @@ public static class CollisionDiagnostics
         var bc        = floor.AddComponent<BoxCollider>();
         bc.isTrigger  = false;
         bc.center     = new Vector3(0f, -0.2f, 0f);
-        bc.size       = new Vector3(1f,  0.4f, 1f);   // 60×0.4×60 world units
+        bc.size       = new Vector3(PlaneLocalExtent, 0.4f, PlaneLocalExtent);  // 60×0.4×60 world units
         EditorUtility.SetDirty(floor);
 
         sb.AppendLine("  ✔ Solid BoxCollider added: 60×0.4×60 m slab, top surface at Y=0.");

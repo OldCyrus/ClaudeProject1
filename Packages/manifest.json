@@ -12,6 +12,7 @@
   ],
   "dependencies": {
     "com.ivanmurzak.unity.mcp": "0.56.0",
+    "com.readyplayerme.core": "https://github.com/readyplayerme/rpm-unity-sdk-core.git",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.cinemachine": "2.10.7",
     "com.unity.collab-proxy": "2.10.2",
