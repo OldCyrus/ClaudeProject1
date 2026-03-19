@@ -1,0 +1,98 @@
+{
+    "name": "PlayerInputActions",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "a1b2c3d4-0001-0001-0001-000000000001",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "a1b2c3d4-0001-0001-0001-000000000002",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "a1b2c3d4-0001-0001-0001-000000000003",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "a1b2c3d4-0001-0001-0001-000000000004",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Dodge",
+                    "type": "Button",
+                    "id": "a1b2c3d4-0001-0001-0001-000000000005",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "a1b2c3d4-0001-0001-0001-000000000006",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Melee",
+                    "type": "Button",
+                    "id": "a1b2c3d4-0001-0001-0001-000000000007",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "a1b2c3d4-0001-0001-0001-000000000008",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "WASD",
+                    "id": "b1000001-0000-0000-0000-000000000001",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                { "name": "up",    "id": "b1000001-0000-0000-0000-000000000002", "path": "<Keyboard>/w", "action": "Move", "isComposite": false, "isPartOfComposite": true },
+                { "name": "down",  "id": "b1000001-0000-0000-0000-000000000003", "path": "<Keyboard>/s", "action": "Move", "isComposite": false, "isPartOfComposite": true },
+                { "name": "left",  "id": "b1000001-0000-0000-0000-000000000004", "path": "<Keyboard>/a", "action": "Move", "isComposite": false, "isPartOfComposite": true },
+                { "name": "right", "id": "b1000001-0000-0000-0000-000000000005", "path": "<Keyboard>/d", "action": "Move", "isComposite": false, "isPartOfComposite": true },
+                { "name": "", "id": "b1000002-0000-0000-0000-000000000001", "path": "<Keyboard>/space",        "action": "Jump",     "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b1000003-0000-0000-0000-000000000001", "path": "<Keyboard>/leftShift",    "action": "Sprint",   "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b1000004-0000-0000-0000-000000000001", "path": "<Keyboard>/leftCtrl",     "action": "Dodge",    "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b1000005-0000-0000-0000-000000000001", "path": "<Mouse>/leftButton",      "action": "Fire",     "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b1000006-0000-0000-0000-000000000001", "path": "<Mouse>/rightButton",     "action": "Melee",    "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b1000007-0000-0000-0000-000000000001", "path": "<Keyboard>/e",            "action": "Interact", "isComposite": false, "isPartOfComposite": false }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
