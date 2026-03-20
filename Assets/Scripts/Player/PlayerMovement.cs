@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     // ── References ──────────────────────────────────────────────────────────
     CharacterController _cc;
     PlayerStats         _stats;
+    PlayerAnimator      _playerAnimator;
     Transform           _cam;
 
     // ── Vertical velocity ───────────────────────────────────────────────────
@@ -69,8 +70,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
-        _cc    = GetComponent<CharacterController>();
-        _stats = GetComponent<PlayerStats>();
+        _cc             = GetComponent<CharacterController>();
+        _stats          = GetComponent<PlayerStats>();
+        _playerAnimator = GetComponent<PlayerAnimator>();
     }
 
     void Update()
@@ -208,6 +210,8 @@ public class PlayerMovement : MonoBehaviour
         _dodgeCooldownTimer = dodgeCooldown;
         _dodgeDir           = direction.normalized;
         _stats.IsInvincible = true;
+
+        _playerAnimator?.TriggerDodge();
     }
 
     void TickDodge()
