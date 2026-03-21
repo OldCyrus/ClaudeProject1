@@ -148,6 +148,13 @@ public class UMAThirdPersonController : MonoBehaviour
         if (avatar != null)
             avatar.CharacterUpdated.AddListener(OnCharacterBuilt);
 
+        // Auto-configure grounding based on the CharacterController geometry.
+        // Starter Assets assumes the Player pivot is at foot level (CC center ≈ (0, height/2, 0)).
+        // If the CC is centred at the capsule midpoint instead, the default GroundedOffset (-0.14)
+        // places the detection sphere too high to touch the floor → Grounded is always false.
+        // We compute the correct offset so the sphere sits just below the capsule bottom.
+        AutoConfigureGrounding();
+
         // Try to grab the animator now; may be null until UMA builds.
         RefreshAnimator();
         AssignAnimationIDs();
@@ -157,6 +164,32 @@ public class UMAThirdPersonController : MonoBehaviour
 
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
+    }
+
+    /// <summary>
+    /// Derives GroundedOffset and GroundedRadius from the CharacterController so ground
+    /// detection works regardless of whether the pivot is at the feet or the capsule centre.
+    ///
+    ///   CC centre at origin   (e.g. center=(0,0,0), height=1.8) → pivot at capsule mid  → GroundedOffset ≈  0.85
+    ///   CC centre at feet     (e.g. center=(0,0.93,0), height=1.8) → pivot at feet     → GroundedOffset ≈ -0.08
+    /// </summary>
+    void AutoConfigureGrounding()
+    {
+        if (_controller == null) return;
+
+        // Distance from pivot to the bottom of the capsule (negative when pivot is above bottom).
+        float capsuleBottom = _controller.center.y - _controller.height * 0.5f;
+
+        // Place the detection sphere 0.05 m above the capsule bottom.
+        // sphere centre = transform.y - GroundedOffset  →  GroundedOffset = -(capsuleBottom + 0.05)
+        GroundedOffset  = -(capsuleBottom + 0.05f);
+
+        // Match sphere radius to the capsule so edge-of-platform grounding is reliable.
+        GroundedRadius  = Mathf.Max(0.1f, _controller.radius - 0.02f);
+
+        Debug.Log($"[UMAThirdPersonController] Auto-grounding: CC centre={_controller.center}, " +
+                  $"capsule bottom={capsuleBottom:F2}, " +
+                  $"GroundedOffset={GroundedOffset:F2}, GroundedRadius={GroundedRadius:F2}");
     }
 
     void OnDestroy()
@@ -250,24 +283,12 @@ public class UMAThirdPersonController : MonoBehaviour
         float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
         if (_input.move == Vector2.zero) targetSpeed = 0f;
 
-        float currentHSpeed =
-            new Vector3(_controller.velocity.x, 0f, _controller.velocity.z).magnitude;
-        const float speedOffset = 0.1f;
         float inputMag = _input.analogMovement ? _input.move.magnitude : 1f;
 
-        if (currentHSpeed < targetSpeed - speedOffset ||
-            currentHSpeed > targetSpeed + speedOffset)
-        {
-            _speed = Mathf.Lerp(currentHSpeed, targetSpeed * inputMag,
-                                Time.deltaTime * SpeedChangeRate);
-            _speed = Mathf.Round(_speed * 1000f) / 1000f;
-        }
-        else
-        {
-            _speed = targetSpeed;
-        }
-
-        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+        // MoveTowards gives linear, predictable acceleration that starts from the very
+        // first frame — no velocity-feedback loop, no "walks in place while ramping up".
+        _speed        = Mathf.MoveTowards(_speed,        targetSpeed * inputMag, SpeedChangeRate * Time.deltaTime);
+        _animationBlend = Mathf.MoveTowards(_animationBlend, targetSpeed,          SpeedChangeRate * Time.deltaTime);
         if (_animationBlend < 0.01f) _animationBlend = 0f;
 
         var inputDir = new Vector3(_input.move.x, 0f, _input.move.y).normalized;
