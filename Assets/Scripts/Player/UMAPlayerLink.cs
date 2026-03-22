@@ -66,6 +66,11 @@ public class UMAPlayerLink : MonoBehaviour
 
     void OnCharacterBuilt(UMAData umaData)
     {
+        // Ensure animation events (OnFootstep, OnLand) have a receiver on the
+        // same GameObject as the Animator — parent scripts are not called.
+        if (avatar.gameObject.GetComponent<AnimationEventReceiver>() == null)
+            avatar.gameObject.AddComponent<AnimationEventReceiver>();
+
         // Try to place the CameraTarget at the head bone position.
         if (cameraTarget != null)
         {
